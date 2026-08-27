@@ -1,0 +1,136 @@
+{% extends "_layouts/cp" %}
+
+{% set title = "What's in this WordPress site"|t('passer') %}
+
+{% block actionButton %}
+    <form method="post" accept-charset="UTF-8" style="display:inline">
+        {{ csrfInput() }}
+        {{ actionInput('passer/analyze/rescan') }}
+        {{ hiddenInput('planId', planId) }}
+        <button type="submit" class="btn">{{ "Re-scan"|t('passer') }}</button>
+    </form>
+    <a href="{{ url('passer/plan/' ~ planId) }}" class="btn submit">{{ "Set up the mapping"|t('passer') }}</a>
+{% endblock %}
+
+{% block content %}
+    <div class="readable">
+        <p>
+            <strong>{{ inventory.siteName ?: inventory.siteUrl ?: "WordPress" }}</strong>
+            {% if inventory.siteUrl %}<span class="light">{{ inventory.siteUrl }}</span>{% endif %}
+            — {{ "read over"|t('passer') }} {{ inventory.sourceType }}.
+        </p>
+    </div>
+
+    {% if inventory.warnings|length %}
+        <blockquote class="note warning">
+            <p><strong>{{ "Before you go on"|t('passer') }}</strong></p>
+            <ul>
+                {% for warning in inventory.warnings %}<li>{{ warning }}</li>{% endfor %}
+            </ul>
+        </blockquote>
+    {% endif %}
+
+    {% if inventory.notScanned|length %}
+        <blockquote class="note">
+            <p>
+                {{ "This source cannot read {things}. Those parts of the site will not be migrated unless you connect a different way."|t('passer', { things: inventory.notScanned|join(', ') }) }}
+            </p>
+        </blockquote>
+    {% endif %}
+
+    <h2>{{ "Content"|t('passer') }}</h2>
+    <table class="data fullwidth">
+        <thead><tr><th>{{ "Post type"|t('passer') }}</th><th class="rightalign">{{ "Count"|t('passer') }}</th></tr></thead>
+        <tbody>
+            {% for type, count in inventory.contentPostTypes %}
+                <tr><td><code>{{ type }}</code></td><td class="rightalign">{{ count|number }}</td></tr>
+            {% else %}
+                <tr><td colspan="2" class="light">{{ "No content post types found."|t('passer') }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>{{ "Taxonomies"|t('passer') }}</h2>
+    <table class="data fullwidth">
+        <thead><tr><th>{{ "Taxonomy"|t('passer') }}</th><th class="rightalign">{{ "Terms"|t('passer') }}</th></tr></thead>
+        <tbody>
+            {% for taxonomy, count in inventory.contentTaxonomies %}
+                <tr><td><code>{{ taxonomy }}</code></td><td class="rightalign">{{ count|number }}</td></tr>
+            {% else %}
+                <tr><td colspan="2" class="light">{{ "None found."|t('passer') }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>{{ "Everything else"|t('passer') }}</h2>
+    <table class="data fullwidth">
+        <tbody>
+            {% set rows = {
+                'Users': inventory.users,
+                'Media': inventory.attachments,
+                'Comments': inventory.comments,
+                'Menus': inventory.menus,
+                'Widgets': inventory.widgets,
+                'Products': inventory.products,
+                'Orders': inventory.orders,
+                'Coupons': inventory.coupons,
+                'Forms': inventory.forms,
+                'Redirects': inventory.redirects,
+            } %}
+            {% for label, count in rows %}
+                <tr>
+                    <td>{{ label|t('passer') }}</td>
+                    <td class="rightalign">{{ count > 0 ? count|number : '—' }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if inventory.plugins|length %}
+        <h2>{{ "WordPress plugins found"|t('passer') }}</h2>
+        <p class="light">
+            {{ "Found by the traces they left, not by whether they are active — a plugin switched off last year still has its data in the database."|t('passer') }}
+        </p>
+        <table class="data fullwidth">
+            <thead>
+                <tr>
+                    <th>{{ "Plugin"|t('passer') }}</th>
+                    <th>{{ "Kind"|t('passer') }}</th>
+                    <th>{{ "What Passer will do"|t('passer') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for plugin in inventory.plugins %}
+                    <tr>
+                        <td>
+                            {{ plugin.name }}
+                            <span class="light" style="display:block">{{ "found via {evidence} {detail}"|t('passer', { evidence: plugin.evidence, detail: plugin.evidenceDetail }) }}</span>
+                        </td>
+                        <td>{{ plugin.category }}</td>
+                        <td>
+                            {% if plugin.supported %}
+                                <span class="status green"></span>
+                            {% else %}
+                                <span class="status orange"></span>
+                            {% endif %}
+                            {{ plugin.handling ?: "No importer."|t('passer') }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% if inventory.metaKeys|length %}
+        <h2>{{ "Custom fields in use"|t('passer') }}</h2>
+        <p class="light">{{ "The twenty most common meta keys. You choose which of these become Craft fields on the next screen."|t('passer') }}</p>
+        <table class="data fullwidth">
+            <thead><tr><th>{{ "Meta key"|t('passer') }}</th><th class="rightalign">{{ "Rows"|t('passer') }}</th></tr></thead>
+            <tbody>
+                {% for key, count in inventory.metaKeys|slice(0, 20) %}
+                    <tr><td><code>{{ key }}</code></td><td class="rightalign">{{ count|number }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

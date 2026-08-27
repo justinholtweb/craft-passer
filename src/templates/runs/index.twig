@@ -1,0 +1,43 @@
+{% extends "_layouts/cp" %}
+
+{% set title = "Runs"|t('passer') %}
+
+{% block content %}
+    <table class="data fullwidth">
+        <thead>
+            <tr>
+                <th>{{ "Run"|t('passer') }}</th>
+                <th>{{ "Source"|t('passer') }}</th>
+                <th>{{ "Status"|t('passer') }}</th>
+                <th>{{ "Phase"|t('passer') }}</th>
+                <th>{{ "Started"|t('passer') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for run in runs %}
+                <tr>
+                    <td>
+                        <a href="{{ url('passer/runs/' ~ run.id) }}">{{ run.name }}</a>
+                        {% if run.dryRun %}<span class="light"> ({{ "dry run"|t('passer') }})</span>{% endif %}
+                    </td>
+                    <td>{{ run.sourceType }}</td>
+                    <td>
+                        <span class="status {{ {
+                            'completed': 'green',
+                            'running': 'blue',
+                            'pending': 'grey',
+                            'paused': 'orange',
+                            'failed': 'red',
+                            'cancelled': 'grey',
+                        }[run.status] ?? 'grey' }}"></span>
+                        {{ run.status }}
+                    </td>
+                    <td>{{ run.phase ?: '—' }}</td>
+                    <td>{{ run.dateStarted ? run.dateStarted|datetime('short') : '—' }}</td>
+                </tr>
+            {% else %}
+                <tr><td colspan="5" class="light">{{ "No runs yet."|t('passer') }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

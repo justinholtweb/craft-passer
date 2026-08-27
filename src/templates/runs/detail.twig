@@ -1,0 +1,78 @@
+{% extends "_layouts/cp" %}
+
+{% set title = run.name %}
+
+{% block actionButton %}
+    <a href="{{ url('passer/runs/' ~ run.id ~ '/log') }}" class="btn">{{ "Full log"|t('passer') }}</a>
+
+    <form method="post" accept-charset="UTF-8" style="display:inline">
+        {{ csrfInput() }}
+        {{ actionInput('passer/runs/download-report') }}
+        {{ hiddenInput('runId', run.id) }}
+        <button type="submit" class="btn">{{ "Download report"|t('passer') }}</button>
+    </form>
+
+    {% if run.status in ['failed', 'cancelled', 'paused', 'pending'] %}
+        <form method="post" accept-charset="UTF-8" style="display:inline">
+            {{ csrfInput() }}
+            {{ actionInput('passer/runs/resume') }}
+            {{ hiddenInput('runId', run.id) }}
+            <button type="submit" class="btn submit">{{ "Resume"|t('passer') }}</button>
+        </form>
+    {% endif %}
+
+    {% if run.status == 'running' %}
+        <form method="post" accept-charset="UTF-8" style="display:inline">
+            {{ csrfInput() }}
+            {{ actionInput('passer/runs/cancel') }}
+            {{ hiddenInput('runId', run.id) }}
+            <button type="submit" class="btn">{{ "Cancel"|t('passer') }}</button>
+        </form>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div id="passer-status">
+        <p>
+            <span class="status {{ { 'completed': 'green', 'running': 'blue', 'failed': 'red' }[run.status] ?? 'grey' }}"></span>
+            <strong>{{ run.status }}</strong>
+            {% if run.phase %}<span class="light"> — {{ run.phase }}</span>{% endif %}
+        </p>
+    </div>
+
+    {% if report %}
+        {% include 'passer/runs/_report' with { report: report } %}
+    {% else %}
+        <blockquote class="note warning">
+            <p>{{ "The plan this run used has been deleted, so its report cannot be rebuilt. The raw log is still available."|t('passer') }}</p>
+        </blockquote>
+    {% endif %}
+{% endblock %}
+
+{% if run.status in ['running', 'pending'] %}
+    {% js %}
+        (function () {
+            const poll = function () {
+                Craft.sendActionRequest('GET', 'passer/runs/status', { params: { runId: {{ run.id }} } })
+                    .then(function (response) {
+                        if (response.data.finished) {
+                            window.location.reload();
+                            return;
+                        }
+
+                        const el = document.querySelector('#passer-status strong');
+                        if (el) {
+                            el.textContent = response.data.status;
+                        }
+
+                        window.setTimeout(poll, 5000);
+                    })
+                    .catch(function () {
+                        window.setTimeout(poll, 15000);
+                    });
+            };
+
+            window.setTimeout(poll, 5000);
+        })();
+    {% endjs %}
+{% endif %}

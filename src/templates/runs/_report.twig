@@ -1,0 +1,42 @@
+<p><strong>{{ report.summary }}</strong></p>
+
+{% if report.phases|length %}
+    <table class="data fullwidth">
+        <thead>
+            <tr>
+                <th>{{ "Phase"|t('passer') }}</th>
+                <th class="rightalign">{{ "Created"|t('passer') }}</th>
+                <th class="rightalign">{{ "Updated"|t('passer') }}</th>
+                <th class="rightalign">{{ "Skipped"|t('passer') }}</th>
+                <th class="rightalign">{{ "Failed"|t('passer') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for phase, counts in report.phases %}
+                <tr>
+                    <td>{{ phase }}</td>
+                    <td class="rightalign">{{ counts.created|number }}</td>
+                    <td class="rightalign">{{ counts.updated|number }}</td>
+                    <td class="rightalign">{{ counts.skipped|number }}</td>
+                    <td class="rightalign">{{ counts.failed ? '<span class="error">' ~ counts.failed|number ~ '</span>'|raw : '0' }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+{% for level, heading in { 'error': 'Errors', 'warning': 'Warnings', 'notice': 'Worth knowing' } %}
+    {% set messages = report.messagesAtLevel(level) %}
+    {% if messages|length %}
+        <h2>{{ heading|t('passer') }} <span class="light">({{ messages|length }})</span></h2>
+        <ul class="passer-messages">
+            {% for message in messages %}
+                <li>
+                    {% if message.sourceTitle %}<strong>{{ message.sourceTitle }}</strong>: {% endif %}
+                    <span style="white-space:pre-wrap">{{ message.message }}</span>
+                    {% if message.phase %}<span class="light"> — {{ message.phase }}</span>{% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endfor %}

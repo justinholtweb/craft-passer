@@ -1,0 +1,176 @@
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% set title = "Migrate from WordPress"|t('passer') %}
+{% set fullPageForm = false %}
+
+{% block content %}
+    <p class="light">
+        {{ "Passer reads WordPress four ways. Pick the one you can actually reach — a database connection or wp-cli sees everything; a WordPress export sees content but no settings; the REST API sees least of all."|t('passer') }}
+    </p>
+
+    <form method="post" accept-charset="UTF-8" enctype="multipart/form-data" id="passer-connect">
+        {{ csrfInput() }}
+        {{ actionInput('passer/connect/start') }}
+
+        {{ forms.selectField({
+            label: "Source"|t('passer'),
+            id: 'sourceType',
+            name: 'sourceType',
+            options: types|map(t => { label: t.name, value: t.handle })|values,
+            value: 'database',
+        }) }}
+
+        {% for handle, type in types %}
+            <div class="passer-source-fields" data-source="{{ handle }}" style="display:none">
+                {% if type.capabilities.limitations|length %}
+                    <div class="readable">
+                        <blockquote class="note">
+                            <p><strong>{{ "What this source cannot do"|t('passer') }}</strong></p>
+                            <ul>
+                                {% for limitation in type.capabilities.limitations %}
+                                    <li>{{ limitation }}</li>
+                                {% endfor %}
+                            </ul>
+                        </blockquote>
+                    </div>
+                {% endif %}
+
+                {% if handle == 'database' %}
+                    {{ forms.textField({ label: "Host"|t('passer'), name: 'config[database][host]', value: '127.0.0.1', required: true }) }}
+                    {{ forms.textField({ label: "Port"|t('passer'), name: 'config[database][port]', value: '3306', type: 'number', size: 6 }) }}
+                    {{ forms.textField({ label: "Database"|t('passer'), name: 'config[database][database]', required: true }) }}
+                    {{ forms.textField({ label: "Username"|t('passer'), name: 'config[database][username]', required: true }) }}
+                    {{ forms.passwordField({ label: "Password"|t('passer'), name: 'config[database][password]' }) }}
+                    {{ forms.textField({
+                        label: "Table prefix"|t('passer'),
+                        instructions: "Leave blank and Passer will find it."|t('passer'),
+                        name: 'config[database][prefix]',
+                        placeholder: 'wp_',
+                    }) }}
+                    {{ forms.textField({
+                        label: "Multisite blog ID"|t('passer'),
+                        instructions: "1 for a single site, or the blog you want from a network."|t('passer'),
+                        name: 'config[database][blogId]',
+                        value: '1',
+                        type: 'number',
+                        size: 5,
+                    }) }}
+                    <p class="light">
+                        {{ "Passer refuses credentials that can write to WordPress. Create a user with SELECT only."|t('passer') }}
+                    </p>
+
+                {% elseif handle == 'wxr' %}
+                    <div class="field">
+                        <div class="heading"><label>{{ "Export files"|t('passer') }}</label></div>
+                        <div class="instructions"><p>{{ "One or more XML files from Tools → Export. A split export can be uploaded all at once."|t('passer') }}</p></div>
+                        <div class="input"><input type="file" name="wxrFiles[]" multiple accept=".xml,.wxr,.txt"></div>
+                    </div>
+
+                {% elseif handle == 'rest' %}
+                    {{ forms.textField({ label: "WordPress URL"|t('passer'), name: 'config[rest][url]', placeholder: 'https://example.com', required: true }) }}
+                    {{ forms.textField({ label: "Username"|t('passer'), name: 'config[rest][username]', required: true }) }}
+                    {{ forms.passwordField({
+                        label: "Application password"|t('passer'),
+                        instructions: "Users → Profile → Application Passwords in WordPress. Not the account password."|t('passer'),
+                        name: 'config[rest][applicationPassword]',
+                    }) }}
+                    {{ forms.lightswitchField({
+                        label: "Skip TLS verification"|t('passer'),
+                        instructions: "For a staging server with a self-signed certificate."|t('passer'),
+                        name: 'config[rest][insecure]',
+                    }) }}
+
+                {% elseif handle == 'wpcli' %}
+                    {{ forms.textField({ label: "SSH host"|t('passer'), name: 'config[wpcli][host]', required: true }) }}
+                    {{ forms.textField({ label: "SSH port"|t('passer'), name: 'config[wpcli][port]', value: '22', type: 'number', size: 6 }) }}
+                    {{ forms.textField({ label: "SSH user"|t('passer'), name: 'config[wpcli][user]', required: true }) }}
+                    {{ forms.textField({
+                        label: "Private key"|t('passer'),
+                        instructions: "Path on this server. Leave blank to use the default identity or agent."|t('passer'),
+                        name: 'config[wpcli][identityFile]',
+                    }) }}
+                    {{ forms.textField({ label: "WordPress path"|t('passer'), name: 'config[wpcli][path]', placeholder: '/var/www/html', required: true }) }}
+                    {{ forms.textField({ label: "wp binary"|t('passer'), name: 'config[wpcli][wpBinary]', value: 'wp' }) }}
+                    {{ forms.lightswitchField({ label: "Pass --allow-root"|t('passer'), name: 'config[wpcli][allowRoot]' }) }}
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div class="buttons">
+            <button type="button" class="btn" id="passer-test">{{ "Test connection"|t('passer') }}</button>
+            <button type="submit" class="btn submit">{{ "Connect and scan"|t('passer') }}</button>
+        </div>
+
+        <div id="passer-test-result" class="readable" style="margin-top:1em"></div>
+    </form>
+
+    <hr>
+
+    <h2>{{ "Where this Craft install can receive things"|t('passer') }}</h2>
+    {% if installed|length %}
+        <ul>
+            {% for handle, name in installed %}
+                <li>{{ name }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="light">{{ "Nothing beyond Craft itself. Passer will use its own plugin-free fallbacks for every optional domain, and say so in the report."|t('passer') }}</p>
+    {% endif %}
+    <p class="light">{{ bridgeStatus }}</p>
+
+    {% if plans|length %}
+        <hr>
+        <h2>{{ "Continue a saved plan"|t('passer') }}</h2>
+        <ul>
+            {% for plan in plans %}
+                <li><a href="{{ url('passer/plan/' ~ plan.id) }}">{{ plan.name }}</a> <span class="light">({{ plan.sourceType }}, {{ plan.dateUpdated|datetime('short') }})</span></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
+
+{% js %}
+    (function () {
+        const select = document.getElementById('sourceType');
+        const panels = document.querySelectorAll('.passer-source-fields');
+
+        function show() {
+            panels.forEach(function (panel) {
+                panel.style.display = panel.dataset.source === select.value ? '' : 'none';
+            });
+        }
+
+        select.addEventListener('change', show);
+        show();
+
+        document.getElementById('passer-test').addEventListener('click', function () {
+            const form = document.getElementById('passer-connect');
+            const data = new FormData(form);
+            const result = document.getElementById('passer-test-result');
+
+            result.innerHTML = '<p class="light">{{ "Testing…"|t('passer')|e('js') }}</p>';
+
+            Craft.sendActionRequest('POST', 'passer/connect/test', { data: data })
+                .then(function (response) {
+                    const body = response.data;
+
+                    if (!body.success) {
+                        result.innerHTML = '<blockquote class="note warning"><p>' + Craft.escapeHtml(body.error) + '</p></blockquote>';
+                        return;
+                    }
+
+                    let html = '<blockquote class="note"><p>' + Craft.escapeHtml(body.summary) + '</p>';
+                    if (body.supports && body.supports.length) {
+                        html += '<p class="light">Can read: ' + body.supports.map(Craft.escapeHtml).join(', ') + '</p>';
+                    }
+                    html += '</blockquote>';
+                    result.innerHTML = html;
+                })
+                .catch(function (error) {
+                    const message = (error.response && error.response.data && error.response.data.error) || error.message;
+                    result.innerHTML = '<blockquote class="note warning"><p>' + Craft.escapeHtml(message) + '</p></blockquote>';
+                });
+        });
+    })();
+{% endjs %}

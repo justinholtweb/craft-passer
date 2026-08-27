@@ -1,0 +1,17 @@
+{% extends "_layouts/cp" %}
+
+{% set title = "Test import"|t('passer') %}
+
+{% block actionButton %}
+    <a href="{{ url('passer/plan/' ~ planId) }}" class="btn">{{ "Back to the mapping"|t('passer') }}</a>
+{% endblock %}
+
+{% block content %}
+    <blockquote class="note">
+        <p>
+            {{ "This was a dry run: nothing was saved. It shows what the mapping would produce, and everything it could not handle."|t('passer') }}
+        </p>
+    </blockquote>
+
+    {% include 'passer/runs/_report' with { report: report } %}
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "_layouts/cp" %}
+
+{% set title = "Plans"|t('passer') %}
+
+{% block actionButton %}
+    <a href="{{ url('passer/connect') }}" class="btn submit add icon">{{ "New migration"|t('passer') }}</a>
+{% endblock %}
+
+{% block content %}
+    <p class="light">
+        {{ "A plan is a saved mapping of one WordPress site onto this Craft install. It can be run as many times as you like — a real migration is never run once."|t('passer') }}
+    </p>
+
+    <table class="data fullwidth">
+        <thead>
+            <tr>
+                <th>{{ "Plan"|t('passer') }}</th>
+                <th>{{ "Source"|t('passer') }}</th>
+                <th>{{ "Updated"|t('passer') }}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for plan in plans %}
+                <tr>
+                    <td><a href="{{ url('passer/plan/' ~ plan.id) }}">{{ plan.name }}</a></td>
+                    <td>{{ sourceTypes[plan.sourceType] is defined ? attribute(sourceTypes, plan.sourceType)|split('\\')|last : plan.sourceType }}</td>
+                    <td>{{ plan.dateUpdated|datetime('short') }}</td>
+                    <td class="rightalign">
+                        <a class="btn small" href="{{ url('passer/analyze/' ~ plan.id) }}">{{ "Scan"|t('passer') }}</a>
+                        <form method="post" accept-charset="UTF-8" style="display:inline">
+                            {{ csrfInput() }}
+                            {{ actionInput('passer/plans/delete') }}
+                            {{ hiddenInput('id', plan.id) }}
+                            <button type="submit" class="btn small">{{ "Delete"|t('passer') }}</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="4" class="light">{{ "No plans yet."|t('passer') }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

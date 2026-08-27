@@ -1,0 +1,128 @@
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% set title = "Passer settings"|t('passer') %}
+{% set fullPageForm = true %}
+
+{% block content %}
+    {{ actionInput('passer/settings/save') }}
+    {{ redirectInput('passer/settings') }}
+
+    <h2>{{ "Reading WordPress"|t('passer') }}</h2>
+
+    {{ forms.textField({
+        label: "Batch size"|t('passer'),
+        instructions: "How many records to read, transform and save at a time. Smaller survives weaker hosts; larger finishes sooner."|t('passer'),
+        name: 'settings[batchSize]',
+        value: settings.batchSize,
+        type: 'number',
+        size: 5,
+        errors: settings.getErrors('batchSize'),
+    }) }}
+
+    {{ forms.textField({
+        label: "Request timeout"|t('passer'),
+        instructions: "Seconds to wait on the source before giving up."|t('passer'),
+        name: 'settings[requestTimeout]',
+        value: settings.requestTimeout,
+        type: 'number',
+        size: 5,
+        errors: settings.getErrors('requestTimeout'),
+    }) }}
+
+    {{ forms.textField({
+        label: "Maximum retries"|t('passer'),
+        name: 'settings[maxRetries]',
+        value: settings.maxRetries,
+        type: 'number',
+        size: 5,
+    }) }}
+
+    <h2>{{ "Media"|t('passer') }}</h2>
+
+    {{ forms.lightswitchField({
+        label: "Download media"|t('passer'),
+        instructions: "Off records the mappings so references resolve, but moves no files."|t('passer'),
+        name: 'settings[downloadMedia]',
+        on: settings.downloadMedia,
+    }) }}
+
+    {{ forms.textField({
+        label: "Maximum asset size"|t('passer'),
+        instructions: "Megabytes. A download is abandoned as soon as it exceeds this, rather than after it finishes."|t('passer'),
+        name: 'settings[maxAssetSizeMb]',
+        value: settings.maxAssetSizeMb,
+        type: 'number',
+        size: 6,
+    }) }}
+
+    <h2>{{ "Content"|t('passer') }}</h2>
+
+    {{ forms.lightswitchField({
+        label: "Rewrite URLs"|t('passer'),
+        instructions: "Turn absolute links to the old site into references to the imported content."|t('passer'),
+        name: 'settings[rewriteUrls]',
+        on: settings.rewriteUrls,
+    }) }}
+
+    {{ forms.lightswitchField({
+        label: "Expand shortcodes"|t('passer'),
+        name: 'settings[expandShortcodes]',
+        on: settings.expandShortcodes,
+    }) }}
+
+    {{ forms.lightswitchField({
+        label: "Use wp-import's adapters"|t('passer'),
+        instructions: bridgeStatus,
+        name: 'settings[useWpImportBridge]',
+        on: settings.useWpImportBridge,
+    }) }}
+
+    <h2>{{ "Running"|t('passer') }}</h2>
+
+    {{ forms.lightswitchField({
+        label: "Continue on error"|t('passer'),
+        instructions: "Log a failed record and carry on. Real WordPress databases contain records that cannot be imported, and stopping at the first one is rarely what you want."|t('passer'),
+        name: 'settings[continueOnError]',
+        on: settings.continueOnError,
+    }) }}
+
+    {{ forms.autosuggestField({
+        label: "Report email"|t('passer'),
+        instructions: "Where to send a run's report. Leave blank to send nothing."|t('passer'),
+        name: 'settings[reportEmail]',
+        value: settings.reportEmail,
+        suggestEnvVars: true,
+        errors: settings.getErrors('reportEmail'),
+    }) }}
+
+    {{ forms.selectField({
+        label: "Log level"|t('passer'),
+        instructions: "Passer logs to storage/logs/passer.log."|t('passer'),
+        name: 'settings[logLevel]',
+        options: [
+            { label: 'Debug', value: 'debug' },
+            { label: 'Info', value: 'info' },
+            { label: 'Notice', value: 'notice' },
+            { label: 'Warning', value: 'warning' },
+            { label: 'Error', value: 'error' },
+        ],
+        value: settings.logLevel,
+    }) }}
+
+    <h2>{{ "The ID map"|t('passer') }}</h2>
+
+    {{ forms.lightswitchField({
+        label: "Delete the ID map when a run is deleted"|t('passer'),
+        instructions: "Off by default. The map is what makes a later top-up run update rather than duplicate, and it is small."|t('passer'),
+        name: 'settings[pruneMapWithRun]',
+        on: settings.pruneMapWithRun,
+    }) }}
+
+    <h2>{{ "What this install can receive"|t('passer') }}</h2>
+    {% if installed|length %}
+        <ul>{% for handle, name in installed %}<li>{{ name }}</li>{% endfor %}</ul>
+    {% else %}
+        <p class="light">{{ "Nothing beyond Craft itself. Every optional domain will use its plugin-free fallback."|t('passer') }}</p>
+    {% endif %}
+{% endblock %}

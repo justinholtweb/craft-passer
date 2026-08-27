@@ -1,0 +1,26 @@
+{# Rendered inside Craft's own settings screen. The full screen lives at passer/settings. #}
+{% import "_includes/forms" as forms %}
+
+<p>
+    {{ "Passer's settings have their own screen, with the destination and bridge status alongside them."|t('passer') }}
+    <a href="{{ url('passer/settings') }}">{{ "Open Passer settings"|t('passer') }}</a>
+</p>
+
+{{ forms.textField({
+    label: "Batch size"|t('passer'),
+    instructions: "How many records to read, transform and save at a time."|t('passer'),
+    id: 'batchSize',
+    name: 'batchSize',
+    value: settings.batchSize,
+    type: 'number',
+    size: 5,
+    errors: settings.getErrors('batchSize'),
+}) }}
+
+{{ forms.lightswitchField({
+    label: "Continue on error"|t('passer'),
+    instructions: "Log a failed record and carry on, rather than stopping the run."|t('passer'),
+    id: 'continueOnError',
+    name: 'continueOnError',
+    on: settings.continueOnError,
+}) }}

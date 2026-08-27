@@ -1,0 +1,21 @@
+{% extends "_layouts/cp" %}
+
+{% set docTitle = title|default('Passer') %}
+
+{% block sidebar %}
+    {% if steps is defined %}
+        <nav class="passer-steps">
+            <ul>
+                {% for step in steps %}
+                    <li class="{{ step.state }}">
+                        {% if step.url %}
+                            <a href="{{ url(step.url) }}">{{ step.label }}</a>
+                        {% else %}
+                            <span>{{ step.label }}</span>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </nav>
+    {% endif %}
+{% endblock %}

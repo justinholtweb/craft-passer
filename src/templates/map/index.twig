@@ -1,0 +1,99 @@
+{% extends "_layouts/cp" %}
+
+{% set title = "ID map"|t('passer') %}
+
+{% block content %}
+    <div class="readable">
+        <p>
+            {{ "Every WordPress record that became something in Craft is recorded here. It is what makes a second run an update rather than a duplicate, and what lets a menu item find the page it points at."|t('passer') }}
+        </p>
+    </div>
+
+    <h2>{{ "By source"|t('passer') }}</h2>
+    <table class="data fullwidth">
+        <thead>
+            <tr>
+                <th>{{ "Source"|t('passer') }}</th>
+                <th class="rightalign">{{ "Mappings"|t('passer') }}</th>
+                <th>{{ "Last written"|t('passer') }}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for source in sources %}
+                <tr>
+                    <td><code>{{ source.sourceHash|slice(0, 12) }}</code></td>
+                    <td class="rightalign">{{ source.total|number }}</td>
+                    <td>{{ source.lastUpdated }}</td>
+                    <td class="rightalign">
+                        <form method="post" accept-charset="UTF-8" style="display:inline">
+                            {{ csrfInput() }}
+                            {{ actionInput('passer/map/prune') }}
+                            {{ hiddenInput('sourceHash', source.sourceHash) }}
+                            <button type="submit" class="btn small">{{ "Prune deleted"|t('passer') }}</button>
+                        </form>
+                        <form method="post" accept-charset="UTF-8" style="display:inline">
+                            {{ csrfInput() }}
+                            {{ actionInput('passer/map/clear') }}
+                            {{ hiddenInput('sourceHash', source.sourceHash) }}
+                            <button type="submit" class="btn small" data-confirm="{{ "Clearing the map means the next run creates new content instead of updating what is here. Continue?"|t('passer') }}">
+                                {{ "Clear"|t('passer') }}
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="4" class="light">{{ "Nothing mapped yet."|t('passer') }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if keys|length %}
+        <h2>{{ "By kind"|t('passer') }}</h2>
+        <table class="data fullwidth">
+            <tbody>
+                {% for row in keys %}
+                    <tr>
+                        <td><a href="{{ url('passer/map', { key: row.sourceKey }) }}">{{ row.sourceKey }}</a></td>
+                        <td class="rightalign">{{ row.total|number }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <h2>{{ "Mappings"|t('passer') }} <span class="light">({{ total|number }})</span></h2>
+    <table class="data fullwidth">
+        <thead>
+            <tr>
+                <th>{{ "Kind"|t('passer') }}</th>
+                <th>{{ "WordPress ID"|t('passer') }}</th>
+                <th>{{ "Became"|t('passer') }}</th>
+                <th>{{ "Old URL"|t('passer') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+                <tr>
+                    <td>{{ row.sourceKey }}</td>
+                    <td>{{ row.sourceId }}</td>
+                    <td>
+                        <code>{{ row.destType|split('\\')|last }}</code> {{ row.destId }}
+                    </td>
+                    <td class="light">{{ row.sourceUrl ?: '—' }}</td>
+                </tr>
+            {% else %}
+                <tr><td colspan="4" class="light">{{ "Nothing to show."|t('passer') }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% set pages = (total / perPage)|round(0, 'ceil') %}
+    {% if pages > 1 %}
+        <nav class="pagination" style="margin-top:1em">
+            {% if page > 1 %}<a class="btn" href="{{ url('passer/map', { page: page - 1, key: key, sourceHash: sourceHash }) }}">{{ "Previous"|t('passer') }}</a>{% endif %}
+            <span class="light">{{ "Page {page} of {pages}"|t('passer', { page: page, pages: pages }) }}</span>
+            {% if page < pages %}<a class="btn" href="{{ url('passer/map', { page: page + 1, key: key, sourceHash: sourceHash }) }}">{{ "Next"|t('passer') }}</a>{% endif %}
+        </nav>
+    {% endif %}
+{% endblock %}

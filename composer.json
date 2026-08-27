@@ -1,0 +1,100 @@
+{
+    "name": "justinholtweb/craft-passer",
+    "description": "The complete WordPress to Craft CMS migration. Reads WordPress from a database, a WXR export, the REST API or wp-cli over SSH, then brings across everything — including WooCommerce, SEO, redirects, menus, widgets and forms.",
+    "type": "craft-plugin",
+    "version": "5.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "passer",
+        "wordpress",
+        "migration",
+        "import",
+        "woocommerce",
+        "wxr",
+        "acf",
+        "gutenberg"
+    ],
+    "license": "proprietary",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "authors": [
+        {
+            "name": "Justin Holt",
+            "homepage": "https://justinholt.com"
+        }
+    ],
+    "support": {
+        "docs": "https://craft-passer.com/docs",
+        "source": "https://github.com/justinholtweb/craft-passer",
+        "issues": "https://github.com/justinholtweb/craft-passer/issues"
+    },
+    "require": {
+        "php": "^8.2",
+        "ext-dom": "*",
+        "ext-json": "*",
+        "ext-libxml": "*",
+        "ext-simplexml": "*",
+        "craftcms/cms": "^5.3.0",
+        "symfony/dom-crawler": "^6.0|^7.0",
+        "symfony/css-selector": "^6.0|^7.0"
+    },
+    "require-dev": {
+        "craftcms/ecs": "dev-main",
+        "craftcms/phpstan": "dev-main",
+        "phpunit/phpunit": "^10.5",
+        "codeception/codeception": "^5.2.0",
+        "codeception/lib-innerbrowser": "^4.1",
+        "codeception/module-asserts": "^3.0.0",
+        "codeception/module-datafactory": "^3.0.0",
+        "codeception/module-phpbrowser": "^3.0.0",
+        "codeception/module-yii2": "^1.1.9",
+        "fakerphp/faker": "^1.19.0",
+        "league/factory-muffin": "^3.3.0",
+        "vlucas/phpdotenv": "^5.4.1"
+    },
+    "suggest": {
+        "craftcms/commerce": "Required to import WooCommerce products, orders, customers and coupons.",
+        "craftcms/ckeditor": "Recommended destination for post content, and required for nested-entry block output.",
+        "justinholtweb/craft-free-nav": "Destination for WordPress navigation menus.",
+        "justinholtweb/craft-friends": "Destination for WordPress redirects when no dedicated redirect plugin is installed.",
+        "verbb/formie": "Destination for Contact Form 7, Gravity Forms, WPForms, Ninja Forms and Formidable forms.",
+        "justinholtweb/craft-bandage": "Lightweight destination for imported form submissions.",
+        "nystudio107/craft-seomatic": "Destination for Yoast, RankMath, AIOSEO and SEOPress metadata.",
+        "nystudio107/craft-retour": "Destination for WordPress redirects.",
+        "verbb/comments": "Destination for WordPress comments.",
+        "craftcms/wp-import": "When installed, Passer reuses its ACF adapters and Gutenberg block transformers."
+    },
+    "autoload": {
+        "psr-4": {
+            "justinholtweb\\passer\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "justinholtweb\\passer\\tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "test-integration": "codecept run integration"
+    },
+    "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true,
+            "craftcms/generator": true
+        }
+    },
+    "extra": {
+        "name": "Passer",
+        "handle": "passer",
+        "developer": "Justin Holt",
+        "developerUrl": "https://justinholt.com",
+        "documentationUrl": "https://craft-passer.com/docs",
+        "changelogUrl": "https://raw.githubusercontent.com/justinholtweb/craft-passer/main/CHANGELOG.md",
+        "class": "justinholtweb\\passer\\Plugin"
+    }
+}

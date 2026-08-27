@@ -1,0 +1,71 @@
+{% extends "_layouts/cp" %}
+
+{% set title = "Log"|t('passer') ~ ' — ' ~ run.name %}
+
+{% block actionButton %}
+    <a href="{{ url('passer/runs/' ~ run.id) }}" class="btn">{{ "Back to the run"|t('passer') }}</a>
+{% endblock %}
+
+{% block content %}
+    <form method="get" action="{{ url('passer/runs/' ~ run.id ~ '/log') }}" class="flex" style="margin-bottom:1em">
+        <select name="level" class="select">
+            <option value="">{{ "Every level"|t('passer') }}</option>
+            {% for option in ['info', 'notice', 'warning', 'error'] %}
+                <option value="{{ option }}" {{ level == option ? 'selected' }}>{{ option }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="phase" class="select">
+            <option value="">{{ "Every phase"|t('passer') }}</option>
+            {% for option in phases %}
+                <option value="{{ option }}" {{ phase == option ? 'selected' }}>{{ option }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="btn">{{ "Filter"|t('passer') }}</button>
+    </form>
+
+    <p class="light">{{ "{total} entries"|t('passer', { total: total|number }) }}</p>
+
+    <table class="data fullwidth">
+        <thead>
+            <tr>
+                <th>{{ "Level"|t('passer') }}</th>
+                <th>{{ "Phase"|t('passer') }}</th>
+                <th>{{ "Record"|t('passer') }}</th>
+                <th>{{ "Message"|t('passer') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+                <tr>
+                    <td>
+                        <span class="status {{ { 'error': 'red', 'warning': 'orange', 'notice': 'blue' }[row.level] ?? 'grey' }}"></span>
+                        {{ row.level }}
+                    </td>
+                    <td>{{ row.phase ?: '—' }}</td>
+                    <td>
+                        {{ row.sourceTitle ?: '—' }}
+                        {% if row.sourceKey %}<span class="light" style="display:block">{{ row.sourceKey }} {{ row.sourceId }}</span>{% endif %}
+                    </td>
+                    <td style="white-space:pre-wrap">{{ row.message }}</td>
+                </tr>
+            {% else %}
+                <tr><td colspan="4" class="light">{{ "Nothing logged."|t('passer') }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% set pages = (total / perPage)|round(0, 'ceil') %}
+    {% if pages > 1 %}
+        <nav class="pagination" style="margin-top:1em">
+            {% if page > 1 %}
+                <a class="btn" href="{{ url('passer/runs/' ~ run.id ~ '/log', { page: page - 1, level: level, phase: phase }) }}">{{ "Previous"|t('passer') }}</a>
+            {% endif %}
+            <span class="light">{{ "Page {page} of {pages}"|t('passer', { page: page, pages: pages }) }}</span>
+            {% if page < pages %}
+                <a class="btn" href="{{ url('passer/runs/' ~ run.id ~ '/log', { page: page + 1, level: level, phase: phase }) }}">{{ "Next"|t('passer') }}</a>
+            {% endif %}
+        </nav>
+    {% endif %}
+{% endblock %}

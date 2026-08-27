@@ -1,0 +1,295 @@
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% set title = "Mapping"|t('passer') %}
+{% set fullPageForm = true %}
+{% set formActions = [] %}
+
+{% block content %}
+    {{ actionInput('passer/plan/save') }}
+    {{ hiddenInput('planId', planId) }}
+    {{ redirectInput('passer/plan/' ~ planId) }}
+
+    {{ forms.textField({ label: "Plan name"|t('passer'), name: 'name', value: plan.name }) }}
+
+    <h2>{{ "Content"|t('passer') }}</h2>
+    <p class="light">{{ "Each WordPress post type becomes a Craft section. Passer will create anything that does not exist yet when you provision."|t('passer') }}</p>
+
+    {% for postType, mapping in plan.postTypes %}
+        {% set count = inventory ? (inventory.postTypes[postType] ?? 0) : 0 %}
+        <div class="pane">
+            <h3><code>{{ postType }}</code> <span class="light">{{ count|number }} {{ "items"|t('passer') }}</span></h3>
+
+            {{ forms.lightswitchField({
+                label: "Import this"|t('passer'),
+                name: 'postTypes[' ~ postType ~ '][enabled]',
+                on: mapping.enabled,
+            }) }}
+
+            <div class="flex">
+                {{ forms.textField({ label: "Section handle"|t('passer'), name: 'postTypes[' ~ postType ~ '][section]', value: mapping.section }) }}
+                {{ forms.textField({ label: "Section name"|t('passer'), name: 'postTypes[' ~ postType ~ '][sectionName]', value: mapping.sectionName }) }}
+                {{ forms.selectField({
+                    label: "Type"|t('passer'),
+                    name: 'postTypes[' ~ postType ~ '][sectionType]',
+                    options: [
+                        { label: "Channel"|t('passer'), value: 'channel' },
+                        { label: "Structure"|t('passer'), value: 'structure' },
+                        { label: "Single"|t('passer'), value: 'single' },
+                    ],
+                    value: mapping.sectionType,
+                }) }}
+            </div>
+
+            <div class="flex">
+                {{ forms.textField({ label: "Entry type handle"|t('passer'), name: 'postTypes[' ~ postType ~ '][entryType]', value: mapping.entryType }) }}
+                {{ forms.textField({ label: "Content field"|t('passer'), name: 'postTypes[' ~ postType ~ '][contentField]', value: mapping.contentField }) }}
+                {{ forms.selectField({
+                    label: "Content stored as"|t('passer'),
+                    name: 'postTypes[' ~ postType ~ '][contentFormat]',
+                    options: [
+                        { label: "HTML"|t('passer'), value: 'html' },
+                        { label: "CKEditor"|t('passer'), value: 'ckeditor' },
+                    ],
+                    value: mapping.contentFormat,
+                }) }}
+            </div>
+
+            <div class="flex">
+                {{ forms.textField({ label: "Excerpt field"|t('passer'), name: 'postTypes[' ~ postType ~ '][excerptField]', value: mapping.excerptField }) }}
+                {{ forms.textField({ label: "Featured image field"|t('passer'), name: 'postTypes[' ~ postType ~ '][featuredImageField]', value: mapping.featuredImageField }) }}
+            </div>
+
+            {{ forms.lightswitchField({
+                label: "Keep WordPress URLs"|t('passer'),
+                instructions: "Use each post's permalink as the entry's slug, so existing links keep working."|t('passer'),
+                name: 'postTypes[' ~ postType ~ '][preserveUris]',
+                on: mapping.preserveUris,
+            }) }}
+
+            {% if mapping.fieldMap|length %}
+                <h4>{{ "Custom fields"|t('passer') }}</h4>
+                <p class="light">{{ "Blank a handle to leave that meta key behind."|t('passer') }}</p>
+                <table class="data fullwidth">
+                    <thead><tr><th>{{ "WordPress meta key"|t('passer') }}</th><th>{{ "Craft field handle"|t('passer') }}</th></tr></thead>
+                    <tbody>
+                        {% for metaKey, handle in mapping.fieldMap %}
+                            <tr>
+                                <td><code>{{ metaKey }}</code></td>
+                                <td><input class="text fullwidth" type="text" name="postTypes[{{ postType }}][fieldMap][{{ metaKey }}]" value="{{ handle }}"></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+            {% if mapping.taxonomyFields|length %}
+                <h4>{{ "Taxonomy fields"|t('passer') }}</h4>
+                <table class="data fullwidth">
+                    <tbody>
+                        {% for taxonomy, handle in mapping.taxonomyFields %}
+                            <tr>
+                                <td><code>{{ taxonomy }}</code></td>
+                                <td><input class="text fullwidth" type="text" name="postTypes[{{ postType }}][taxonomyFields][{{ taxonomy }}]" value="{{ handle }}"></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <h2>{{ "Taxonomies"|t('passer') }}</h2>
+    {% for taxonomy, mapping in plan.taxonomies %}
+        <div class="pane">
+            <h3><code>{{ taxonomy }}</code></h3>
+            {{ forms.lightswitchField({ label: "Import this"|t('passer'), name: 'taxonomies[' ~ taxonomy ~ '][enabled]', on: mapping.enabled }) }}
+            <div class="flex">
+                {{ forms.selectField({
+                    label: "Becomes"|t('passer'),
+                    name: 'taxonomies[' ~ taxonomy ~ '][destination]',
+                    options: [
+                        { label: "A category group"|t('passer'), value: 'categories' },
+                        { label: "A tag group"|t('passer'), value: 'tags' },
+                        { label: "Entries in a section"|t('passer'), value: 'entries' },
+                        { label: "Nothing"|t('passer'), value: 'skip' },
+                    ],
+                    value: mapping.destination,
+                }) }}
+                {{ forms.textField({ label: "Handle"|t('passer'), name: 'taxonomies[' ~ taxonomy ~ '][handle]', value: mapping.handle }) }}
+                {{ forms.textField({ label: "Name"|t('passer'), name: 'taxonomies[' ~ taxonomy ~ '][name]', value: mapping.name }) }}
+            </div>
+        </div>
+    {% endfor %}
+
+    <h2>{{ "Users"|t('passer') }}</h2>
+    <div class="pane">
+        {{ forms.lightswitchField({ label: "Import users"|t('passer'), name: 'importUsers', on: plan.importUsers }) }}
+        {{ forms.lightswitchField({
+            label: "Include users who never authored anything"|t('passer'),
+            instructions: "Off by default. On a site with spam registrations this is usually thousands of accounts nobody wants."|t('passer'),
+            name: 'importNonAuthors',
+            on: plan.importNonAuthors,
+        }) }}
+        {{ forms.lightswitchField({
+            label: "Create users as active"|t('passer'),
+            instructions: "They cannot sign in either way — WordPress password hashes are not verifiable by Craft — so this only decides whether they must be activated or can request a reset."|t('passer'),
+            name: 'activateUsers',
+            on: plan.activateUsers,
+        }) }}
+
+        <h4>{{ "Roles"|t('passer') }}</h4>
+        <table class="data fullwidth">
+            <thead><tr><th>{{ "WordPress role"|t('passer') }}</th><th>{{ "Craft user group handle"|t('passer') }}</th></tr></thead>
+            <tbody>
+                {% for role, handle in plan.roleMap %}
+                    <tr>
+                        <td><code>{{ role }}</code></td>
+                        <td><input class="text fullwidth" type="text" name="roleMap[{{ role }}]" value="{{ handle }}"></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <h2>{{ "Media"|t('passer') }}</h2>
+    <div class="pane">
+        {{ forms.lightswitchField({ label: "Import media"|t('passer'), name: 'importMedia', on: plan.importMedia }) }}
+        {{ forms.selectField({
+            label: "Volume"|t('passer'),
+            name: 'volume',
+            options: volumes|map(v => { label: v.name, value: v.handle })|values,
+            value: plan.volume,
+        }) }}
+        {{ forms.selectField({
+            label: "Folder structure"|t('passer'),
+            name: 'folderStrategy',
+            options: [
+                { label: "Mirror WordPress (2019/07)"|t('passer'), value: 'preserve' },
+                { label: "Year and month from the upload date"|t('passer'), value: 'yearMonth' },
+                { label: "Everything in one folder"|t('passer'), value: 'flat' },
+            ],
+            value: plan.folderStrategy,
+        }) }}
+        {{ forms.lightswitchField({
+            label: "Import media nothing references"|t('passer'),
+            instructions: "Off by default. A real uploads folder is mostly abandoned images and plugin thumbnails."|t('passer'),
+            name: 'importOrphanedMedia',
+            on: plan.importOrphanedMedia,
+        }) }}
+    </div>
+
+    <h2>{{ "The rest of the site"|t('passer') }}</h2>
+    <p class="light">{{ "These are the parts Craft's own WordPress importer does not handle. Passer never requires the destination plugin — every one has a fallback that needs nothing but Craft."|t('passer') }}</p>
+
+    {% for domain, options in destinations %}
+        {% set mapping = plan.domains[domain] ?? null %}
+        {% set supported = capabilities.supports(domain) %}
+        <div class="pane">
+            <h3>{{ domain|title }}</h3>
+
+            {% if not supported %}
+                <blockquote class="note warning">
+                    <p>{{ "The source you connected cannot read this. Connect over a database or wp-cli to bring it across."|t('passer') }}</p>
+                </blockquote>
+            {% endif %}
+
+            {{ forms.lightswitchField({
+                label: "Import this"|t('passer'),
+                name: 'domains[' ~ domain ~ '][enabled]',
+                on: mapping ? mapping.enabled : false,
+                disabled: not supported,
+            }) }}
+
+            {{ forms.selectField({
+                label: "Goes to"|t('passer'),
+                name: 'domains[' ~ domain ~ '][destination]',
+                options: options,
+                value: mapping ? mapping.destination : '',
+            }) }}
+
+            <ul class="light" style="margin-top:.5em">
+                {% for option in options %}
+                    <li><strong>{{ option.label }}</strong> — {{ option.description }}</li>
+                {% endfor %}
+            </ul>
+
+            {% if domain == 'menus' or domain == 'widgets' %}
+                {{ forms.textField({
+                    label: "Section handle"|t('passer'),
+                    instructions: "Used by the plugin-free fallback."|t('passer'),
+                    name: 'domains[' ~ domain ~ '][options][section]',
+                    value: mapping ? (mapping.options.section ?? '') : '',
+                    placeholder: domain == 'menus' ? 'navigation' : 'widgets',
+                }) }}
+            {% endif %}
+
+            {% if domain == 'commerce' %}
+                {{ forms.textField({
+                    label: "Commerce product type handle"|t('passer'),
+                    name: 'domains[commerce][options][productType]',
+                    value: mapping ? (mapping.options.productType ?? '') : '',
+                    placeholder: 'wooProducts',
+                }) }}
+            {% endif %}
+
+            {% if domain == 'redirects' %}
+                {{ forms.textareaField({
+                    label: "Paste an .htaccess"|t('passer'),
+                    instructions: "Optional. Redirect and RewriteRule directives will be parsed alongside whatever the plugins hold."|t('passer'),
+                    name: 'domains[redirects][options][htaccess]',
+                    value: mapping ? (mapping.options.htaccess ?? '') : '',
+                    rows: 4,
+                }) }}
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <h2>{{ "Behaviour"|t('passer') }}</h2>
+    <div class="pane">
+        {{ forms.lightswitchField({
+            label: "Update what is already imported"|t('passer'),
+            instructions: "On, a second run updates. Off, it skips anything already in the ID map."|t('passer'),
+            name: 'updateExisting',
+            on: plan.updateExisting,
+        }) }}
+        {{ forms.lightswitchField({
+            label: "Rewrite WordPress URLs in content"|t('passer'),
+            name: 'rewriteUrls',
+            on: plan.rewriteUrls,
+        }) }}
+        {{ forms.lightswitchField({
+            label: "Expand shortcodes"|t('passer'),
+            name: 'expandShortcodes',
+            on: plan.expandShortcodes,
+        }) }}
+        {{ forms.selectField({
+            label: "Default site"|t('passer'),
+            name: 'defaultSiteId',
+            options: sites|map(s => { label: s.name, value: s.id })|values,
+            value: plan.defaultSiteId,
+        }) }}
+    </div>
+
+    <hr>
+
+    <div class="buttons">
+        <button type="submit" class="btn submit">{{ "Save"|t('passer') }}</button>
+
+        <button type="submit" class="btn" formaction="{{ actionUrl('passer/plan/provision') }}" name="apply" value="0">
+            {{ "Preview what would be created"|t('passer') }}
+        </button>
+
+        <button type="submit" class="btn" formaction="{{ actionUrl('passer/plan/provision') }}" name="apply" value="1">
+            {{ "Create sections and fields"|t('passer') }}
+        </button>
+
+        <button type="submit" class="btn" formaction="{{ actionUrl('passer/plan/preview') }}" name="limit" value="5">
+            {{ "Import 5 of everything as a test"|t('passer') }}
+        </button>
+
+        <button type="submit" class="btn submit" formaction="{{ actionUrl('passer/plan/start') }}">
+            {{ "Run the migration"|t('passer') }}
+        </button>
+    </div>
+{% endblock %}
