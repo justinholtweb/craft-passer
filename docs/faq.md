@@ -5,6 +5,16 @@ order: 50
 summary: How Passer differs from wp-import, what it refuses to do, and what needs a decision.
 ---
 
+## Is Passer free?
+
+Lite is, and it is not a trial. It brings across posts, pages, custom post types, users, media,
+taxonomies and comments from a WXR export or the REST API, with the full Gutenberg, classic-content,
+shortcode and ACF handling and the whole plan-provision-run pipeline.
+
+Pro is a one-off **$99** with a **$79/year** renewal, and adds the database and wp-cli sources plus
+the six domains that only they can reach: WooCommerce, SEO metadata, redirects, menus, widgets and
+forms.
+
 ## How is this different from `craftcms/wp-import`?
 
 Two things: reach and sources.

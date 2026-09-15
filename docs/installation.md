@@ -20,6 +20,28 @@ php craft plugin/install passer
 
 Or install it from **Settings → Plugins** in the control panel.
 
+## Editions
+
+| | Lite | Pro |
+| --- | --- | --- |
+| Price | Free | $99 one-off, $79/year renewal |
+| Sources | WXR export, REST API | **and** MySQL database, wp-cli over SSH |
+| Content, users, media, taxonomies | ✓ | ✓ |
+| Gutenberg, classic content, shortcodes, ACF | ✓ | ✓ |
+| Comments | ✓ | ✓ |
+| Plan, provision, test-import, run, report | ✓ | ✓ |
+| The ID map and re-runnable migrations | ✓ | ✓ |
+| WooCommerce → Craft Commerce | — | ✓ |
+| SEO metadata | — | ✓ |
+| Redirects | — | ✓ |
+| Menus | — | ✓ |
+| Widgets | — | ✓ |
+| Forms and their entries | — | ✓ |
+
+Lite is roughly parity with `craftcms/wp-import`, from the control panel rather than the command
+line. Pro adds the two sources that can reach `wp_options`, `wp_postmeta` and the `wc_*` tables,
+and the six domains that live in them.
+
 ## Optional destination plugins
 
 Passer hard-requires none of these. Every domain has a fallback that needs nothing but Craft, and

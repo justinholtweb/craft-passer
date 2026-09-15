@@ -107,6 +107,24 @@ gateways, captcha keys — is listed explicitly rather than silently dropped.
 
 ---
 
+## Editions
+
+| | Lite | Pro |
+| --- | --- | --- |
+| Price | Free | $99 one-off, $79/year renewal |
+| Sources | WXR export, REST API | **and** MySQL database, wp-cli over SSH |
+| Content, users, media, taxonomies, comments | ✓ | ✓ |
+| Gutenberg, classic content, shortcodes, ACF | ✓ | ✓ |
+| Plan, provision, test-import, run, report | ✓ | ✓ |
+| The ID map and re-runnable migrations | ✓ | ✓ |
+| WooCommerce, SEO, redirects, menus, widgets, forms | — | ✓ |
+
+Lite is roughly parity with `craftcms/wp-import`, from the control panel rather than the command
+line. Pro adds the two sources that can reach `wp_options`, `wp_postmeta` and the `wc_*` tables —
+and the six domains that live in them.
+
+---
+
 ## Nothing is required
 
 Passer hard-requires none of the plugins it writes to. Every domain has a fallback that needs
