@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Passer — Plugin Store promos</title>
+<link rel="stylesheet" href="fonts.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --charcoal: #101622;
+    --charcoal-light: #18202f;
+    --charcoal-lighter: #232e42;
+    --accent: #7492C4;
+    --accent-deep: #4C6EA8;
+    --accent-warm: #2FA39B;
+    --off-white: #eef1f6;
+  }
+  html { background: #000; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+         color: var(--off-white); -webkit-font-smoothing: antialiased; }
+
+  .slide { position: relative; width: 1920px; height: 1080px; overflow: hidden;
+           background:
+             radial-gradient(ellipse at 84% 14%, rgba(116, 146, 196, 0.24) 0%, transparent 42%),
+             radial-gradient(ellipse at 64% 4%,  rgba(47, 163, 155, 0.14) 0%, transparent 36%),
+             radial-gradient(ellipse at 14% 86%, rgba(76, 110, 168, 0.16) 0%, transparent 42%),
+             radial-gradient(ellipse at 36% 96%, rgba(116, 146, 196, 0.08) 0%, transparent 36%),
+             linear-gradient(135deg, #101622 0%, #111a28 30%, #0f1b21 62%, #101622 100%); }
+  /* Oversized watermark, echoing the app icon with its frame stripped. */
+  .slide::after { content: ''; position: absolute; top: -18%; left: -12%;
+    width: 1180px; height: 1180px;
+    background: url('assets/watermark.svg') no-repeat center / contain;
+    opacity: .05; pointer-events: none; }
+  .slide::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 6px; z-index: 5;
+    background: linear-gradient(90deg, #4C6EA8, #7492C4, #2FA39B, #4C6EA8); }
+  .inner { position: relative; z-index: 2; height: 100%; padding: 118px 130px;
+           display: flex; align-items: center; }
+
+  .eyebrow { display: flex; align-items: center; gap: 18px; font-size: 20px; font-weight: 500;
+    letter-spacing: .32em; text-transform: uppercase; color: rgba(238,241,246,.62); margin-bottom: 34px; }
+  .eyebrow .rule { width: 58px; height: 3px; border-radius: 2px; background: var(--accent); }
+
+  h1, h2 { font-family: 'Jersey 20', 'Inter', sans-serif; font-weight: 400;
+           line-height: .9; letter-spacing: .005em; padding-bottom: .06em; }
+  .gradient-text { background: linear-gradient(100deg, #7492C4, #9db4dd, #2FA39B, #7492C4);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .solid-head { color: var(--off-white); }
+  .lede { font-size: 34px; line-height: 1.5; color: rgba(238,241,246,.74); }
+  .lede code { font-family: ui-monospace, Menlo, monospace; font-size: .9em;
+    background: rgba(255,255,255,.07); padding: 2px 8px; border-radius: 6px; }
+
+  .cover .inner { gap: 90px; }
+  .cover .copy { flex: 1 1 auto; min-width: 0; }
+  .cover h1 { margin-bottom: 26px; }
+  .cover .tagline { font-family: 'Jersey 20', 'Inter', sans-serif; line-height: 1.06;
+    color: var(--off-white); margin-bottom: 40px; max-width: 21ch; }
+  .cover .lede { max-width: 38ch; font-size: 30px; }
+  .cover .mark { flex: 0 0 auto; width: 440px; height: 440px;
+    filter: drop-shadow(14px 14px 0 rgba(0,0,0,.35)); }
+  .cover .mark img { width: 100%; height: 100%; display: block; }
+
+  .badges { display: flex; gap: 16px; margin-top: 52px; }
+  .badge { display: inline-flex; align-items: center; gap: 12px; padding: 14px 26px;
+    font-size: 22px; font-weight: 500; color: rgba(238,241,246,.85);
+    border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.05); border-radius: 999px; }
+  .badge .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+
+  .statement .inner { justify-content: center; text-align: center; }
+  .statement .copy { max-width: 1340px; }
+  .statement .eyebrow { justify-content: center; }
+  .statement h2 { margin-bottom: 40px; }
+  .statement .lede { font-size: 36px; max-width: 34ch; margin: 0 auto; }
+
+  .grid-slide .inner { align-items: center; }
+  .grid-slide .wide { width: 100%; }
+  .grid-slide h2 { margin-bottom: 48px; }
+  .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .card { display: flex; align-items: flex-start; gap: 16px; padding: 26px 28px;
+    border-radius: 16px; background: rgba(255,255,255,.045);
+    border: 1px solid rgba(255,255,255,.08); font-size: 26px; line-height: 1.3;
+    color: var(--off-white); }
+  .card svg { flex: 0 0 auto; margin-top: 5px; }
+
+  /* Source table — the "four ways in" slide. */
+  .table-slide .inner { align-items: center; }
+  .table-slide .wide { width: 100%; }
+  .table-slide h2 { margin-bottom: 20px; }
+  .table-slide .sub { font-size: 29px; color: rgba(238,241,246,.6); margin-bottom: 44px; max-width: 74ch; line-height: 1.45; }
+  .rows { display: flex; flex-direction: column; gap: 14px; }
+  .row { display: grid; grid-template-columns: 430px 380px 1fr; align-items: center; gap: 34px;
+    padding: 24px 38px; border-radius: 16px;
+    background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.08); }
+  .row .src { font-size: 30px; font-weight: 600; color: var(--off-white); display: flex; align-items: center; gap: 16px; }
+  .row .src i { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); flex: 0 0 auto; }
+  .row .reach { font-size: 26px; color: var(--accent); font-weight: 500; }
+  .row .when { font-size: 26px; color: rgba(238,241,246,.6); line-height: 1.35; }
+
+  /* Pipeline — the phase chain. */
+  .flow-slide .inner { align-items: center; }
+  .flow-slide .wide { width: 100%; }
+  .flow-slide h2 { margin-bottom: 20px; }
+  .flow-slide .sub { font-size: 30px; color: rgba(238,241,246,.6); margin-bottom: 72px; }
+  .chain { display: flex; align-items: stretch; gap: 14px; }
+  .step { flex: 1 1 0; padding: 46px 24px 52px; border-radius: 16px; text-align: center;
+    background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.08); }
+  .step b { display: block; font-family: ui-monospace, Menlo, monospace; font-size: 26px; white-space: nowrap;
+    font-weight: 600; color: var(--off-white); margin-bottom: 18px; }
+  .step span { font-size: 22px; line-height: 1.4; color: rgba(238,241,246,.55); }
+  .step i { display: block; font-style: normal; font-size: 18px; letter-spacing: .2em;
+    color: var(--accent); margin-bottom: 20px; }
+
+  .footer { position: absolute; left: 130px; bottom: 62px; z-index: 3; display: flex;
+    align-items: center; gap: 18px; font-size: 22px; letter-spacing: .06em;
+    color: rgba(238,241,246,.4); }
+  .footer img { width: 40px; height: 40px; border-radius: 9px; }
+  .footer b { color: rgba(238,241,246,.72); font-weight: 600; }
+
+  /* Passer names a lot of other people's products, so the cover says plainly that it is not one of them. */
+  .legal { position: absolute; right: 130px; bottom: 64px; z-index: 3; max-width: 640px;
+    text-align: right; font-size: 16px; line-height: 1.5; color: rgba(238,241,246,.3); }
+
+  body.single .slide { display: none; }
+  body.single .slide.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- 1 · cover ================================================== -->
+<section class="slide cover" data-n="1">
+  <div class="inner">
+    <div class="copy">
+      <div class="eyebrow"><span class="rule"></span> Craft CMS 5</div>
+      <h1 class="gradient-text" style="font-size:200px">Passer</h1>
+      <p class="tagline" style="font-size:58px">The Complete WordPress to Craft Migration</p>
+      <p class="lede">Reads WordPress from a database, a WXR export, the REST API or wp-cli over SSH — then brings across WooCommerce, SEO, redirects, menus, widgets and forms as well as the content.</p>
+      <div class="badges">
+        <span class="badge"><span class="dot"></span> Craft 5.3+ · PHP 8.2+</span>
+        <span class="badge">Read-only by construction</span>
+      </div>
+    </div>
+    <div class="mark"><img src="assets/icon.svg" alt=""></div>
+  </div>
+  <div class="legal">Passer is an independent plugin, not affiliated with or endorsed by the WordPress project, the WordPress Foundation, Automattic or WooCommerce. Product names are used for reference only.</div>
+</section>
+
+<!-- 2 · four ways in =========================================== -->
+<section class="slide table-slide" data-n="2">
+  <div class="inner">
+    <div class="wide">
+      <div class="eyebrow"><span class="rule"></span> Passer</div>
+      <h2 class="gradient-text" style="font-size:104px">Four ways in</h2>
+      <p class="sub">A site being moved off WordPress is very often half-broken. Every source produces the same records, so the mapping you build does not change with the connection you happen to have.</p>
+      <div class="rows">
+        <div class="row">
+          <span class="src"><i></i> MySQL database</span>
+          <span class="reach">Everything</span>
+          <span class="when">A live database, a tunnel, or a restored dump. The only complete source.</span>
+        </div>
+        <div class="row">
+          <span class="src"><i></i> WXR export file</span>
+          <span class="reach">Content, terms, users</span>
+          <span class="when">No credentials, no network. Works on a site that is already switched off.</span>
+        </div>
+        <div class="row">
+          <span class="src"><i></i> REST API</span>
+          <span class="reach">What REST exposes</span>
+          <span class="when">Easiest to set up, weakest data. Parity with wp-import.</span>
+        </div>
+        <div class="row">
+          <span class="src"><i></i> wp-cli over SSH</span>
+          <span class="reach">Everything</span>
+          <span class="when">A managed host that gives you a shell but not a database port.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Passer</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-passer</div>
+</section>
+
+<!-- 3 · the missing half ======================================= -->
+<section class="slide statement" data-n="3">
+  <div class="inner">
+    <div class="copy">
+      <div class="eyebrow"><span class="rule"></span> Passer</div>
+      <h2 class="gradient-text" style="font-size:112px">The half most tools<br>leave behind</h2>
+      <p class="lede">WooCommerce, SEO metadata, redirects, menus, widgets and forms — read out of <code>wp_options</code>, <code>wp_postmeta</code> and the <code>wc_*</code> tables, where the data actually lives.</p>
+    </div>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Passer</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-passer</div>
+</section>
+
+<!-- 4 · honesty about reach ==================================== -->
+<section class="slide statement" data-n="4">
+  <div class="inner">
+    <div class="copy">
+      <div class="eyebrow"><span class="rule"></span> Passer</div>
+      <h2 class="gradient-text" style="font-size:112px">It tells you what<br>it cannot see</h2>
+      <p class="lede">A WXR export cannot see widgets, so Passer greys that phase out and says why. Silently importing zero of something is the most misleading thing a migration tool can do.</p>
+    </div>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Passer</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-passer</div>
+</section>
+
+<!-- 5 · the pipeline =========================================== -->
+<section class="slide flow-slide" data-n="5">
+  <div class="inner">
+    <div class="wide">
+      <div class="eyebrow"><span class="rule"></span> Passer</div>
+      <h2 class="gradient-text" style="font-size:104px">Seven phases,<br>every one re-runnable</h2>
+      <p class="sub">A real migration is never run once.</p>
+      <div class="chain">
+        <div class="step"><i>01</i><b>connect</b><span>Read-only, and it proves it</span></div>
+        <div class="step"><i>02</i><b>analyse</b><span>Post types, taxonomies, meta keys, plugins</span></div>
+        <div class="step"><i>03</i><b>plan</b><span>A full mapping, overridable row by row</span></div>
+        <div class="step"><i>04</i><b>provision</b><span>Sections, entry types and fields, idempotently</span></div>
+        <div class="step"><i>05</i><b>test-import</b><span>Five of everything, before committing</span></div>
+        <div class="step"><i>06</i><b>run</b><span>Queued, checkpointed, resumable</span></div>
+        <div class="step"><i>07</i><b>report</b><span>What came across, what did not, and why</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Passer</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-passer</div>
+</section>
+
+<!-- 6 · the ID map ============================================= -->
+<section class="slide statement" data-n="6">
+  <div class="inner">
+    <div class="copy">
+      <div class="eyebrow"><span class="rule"></span> Passer</div>
+      <h2 class="gradient-text" style="font-size:112px">Run it again<br>on cutover day</h2>
+      <p class="lede">Every WordPress record that became something in Craft is recorded. A second run updates rather than duplicating, and a ten-year-old absolute link resolves to the entry that replaced it.</p>
+    </div>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Passer</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-passer</div>
+</section>
+
+<!-- 7 · features grid ========================================== -->
+<section class="slide grid-slide" data-n="7">
+  <div class="inner">
+    <div class="wide">
+      <div class="eyebrow"><span class="rule"></span> Passer</div>
+      <h2 style="font-size:96px">What comes across</h2>
+      <div class="cards">
+        <div class="card">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="3">
+            <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Posts, pages, custom post types &amp; hierarchy</span>
+        </div>
+        <div class="card">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="3">
+            <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>WooCommerce → Craft Commerce, orders included</span>
+        </div>
+        <div class="card">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="3">
+            <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Gutenberg blocks, parsed — not regexed</span>
+        </div>
+        <div class="card">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="3">
+            <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>SEO from Yoast, Rank Math, AIOSEO, SEOPress</span>
+        </div>
+        <div class="card">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="3">
+            <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>ACF, repeaters and flexible content</span>
+        </div>
+        <div class="card">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="3">
+            <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Redirects, resolved to the imported entry</span>
+        </div>
+        <div class="card">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="3">
+            <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Menus as relations, not frozen URLs</span>
+        </div>
+        <div class="card">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="3">
+            <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Forms and their stored entries, five vendors</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Passer</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-passer</div>
+</section>
+
+<!-- 8 · no hard requirements =================================== -->
+<section class="slide statement" data-n="8">
+  <div class="inner">
+    <div class="copy">
+      <div class="eyebrow"><span class="rule"></span> Passer</div>
+      <h2 class="gradient-text" style="font-size:112px">Nothing is required</h2>
+      <p class="lede">Passer hard-requires none of the plugins it writes to. Every domain has a fallback that needs nothing but Craft, and the wizard shows you what it found.</p>
+    </div>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Passer</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-passer</div>
+</section>
+
+<script>
+  var n = new URLSearchParams(location.search).get('s');
+  if (n) {
+    document.body.classList.add('single');
+    var el = document.querySelector('.slide[data-n="' + n + '"]');
+    if (el) el.classList.add('active');
+  }
+</script>
+</body>
+</html>
