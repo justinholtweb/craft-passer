@@ -1,18 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Passer">
     <!--
-      Passer is the genus of the sparrows — the small brown bird that follows people between
-      houses. A bird carrying something from one perch to another is the plugin's whole job.
+      Passer takes a WordPress site past itself and onto Craft: the near car pulls out,
+      crosses the line and completes the overtake. Traced from the source artwork and
+      redrawn as vectors so it holds together from 16px to a billboard.
     -->
-    <g fill="currentColor">
-        <!-- Body -->
-        <path d="M62.5 27.5c-9.6 0-17.8 4.3-22.8 11.1-2.7 3.6-6.5 6.2-10.9 7.1l-11.4 2.4c-1.5.3-2.2 2.1-1.3 3.4l6.6 9.2c1 1.4.8 3.3-.5 4.4l-7.1 6.2c-1.4 1.2-.8 3.5 1 3.9l14.3 3.1c1.3.3 2.3 1.3 2.6 2.6l1.5 6.4c.4 1.8 2.7 2.4 3.9 1l6.1-7.1c1-1.2 2.6-1.6 4-1.1 3.2 1.1 6.7 1.7 10.3 1.7 15.6 0 28.2-11 28.2-26.4S78.1 27.5 62.5 27.5z"/>
-        <!-- Wing, cut back out of the body so the silhouette reads at 16px -->
-        <path d="M60.4 46.3c-7.4 0-13.4 5-13.4 11.2s6 11.2 13.4 11.2c7.4 0 13.4-5 13.4-11.2s-6-11.2-13.4-11.2z" fill="#fff" fill-opacity=".001"/>
-        <!-- Beak, pointing at where the bird is going -->
-        <path d="M92.4 45.6l6.4-3.4c1-.5 1-2 0-2.5l-6.4-3.4v9.3z"/>
-        <!-- Eye -->
-        <circle cx="79.5" cy="45.5" r="3.1" fill="#fff"/>
-        <!-- Tail -->
-        <path d="M8.2 34.7l14.6 8.6c1.3.8 1.2 2.8-.2 3.4L6.4 53.4c-1.6.7-3.2-.9-2.6-2.5l3.1-8.1c.3-.7.3-1.5 0-2.2l-2.7-7c-.6-1.6 1-3.1 2.5-2.3l1.5.8z"/>
+    <rect width="100" height="100" rx="18" fill="#7492C4"/>
+    <g fill="none" stroke="#fff" stroke-linecap="round">
+        <!-- Verges -->
+        <path d="M25 15L11.9 83.9" stroke-width="2.4"/>
+        <path d="M75 15L88.1 83.9" stroke-width="2.4"/>
+        <!-- Centre line -->
+        <path d="M50 14.8V20.5 M50 26.3V32 M50 37.9V43.6" stroke-width="1.6" stroke-linecap="butt"/>
+        <!-- The overtake: the lane marking peels away and turns into an arrow -->
+        <path d="M50 77.7V85.1" stroke-width="3.4" stroke-linecap="butt"/>
+        <path d="M50 71.9L50 62.5C50 57.6 55 53.6 57.5 50C60.8 46.2 65.3 41.5 65.3 36.4" stroke-width="3.2" stroke-linecap="butt"/>
+    </g>
+    <path d="M65.4 26.2L70.2 35.2L60.6 35.2Z"
+          fill="#fff" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/>
+    <g fill="#fff" fill-rule="evenodd">
+        <!-- The car being passed -->
+        <path transform="translate(23.8 37.6) scale(0.216)" d="M26.6 0 L73.4 0 Q80.2 0.6 81.2 5.8 L88.6 20.3 L96.5 20.3 Q100 20.3 100 23.8 L100 25.2 Q100 28.6 96.6 28.9 L94.6 29.4 C97.2 33.5 99.5 40 100 52 L100 74 Q100 78 96 78 L4 78 Q0 78 0 74 L0 52 C0.5 40 2.8 33.5 5.4 29.4 L3.4 28.9 Q0 28.6 0 25.2 L0 23.8 Q0 20.3 3.5 20.3 L11.4 20.3 L18.8 5.8 Q19.8 0.6 26.6 0 Z M28.5 4.8 L71.5 4.8 Q75.3 4.8 76.2 7.6 L82.5 17.8 Q84.6 20.4 81.2 20.4 L18.8 20.4 Q15.4 20.4 17.5 17.8 L23.8 7.6 Q24.7 4.8 28.5 4.8 Z M8.3 46 a8.3 6.9 0 1 0 16.6 0 a8.3 6.9 0 1 0 -16.6 0 Z M75.1 46 a8.3 6.9 0 1 0 16.6 0 a8.3 6.9 0 1 0 -16.6 0 Z M24 67.5 L76 67.5 Q79.6 67.5 80.6 70.6 L84.6 80.5 L15.4 80.5 L19.4 70.6 Q20.4 67.5 24 67.5 Z"/>
+        <!-- The car doing the passing -->
+        <path transform="translate(55.9 62.4) scale(0.252)" d="M26.6 0 L73.4 0 Q80.2 0.6 81.2 5.8 L88.6 20.3 L96.5 20.3 Q100 20.3 100 23.8 L100 25.2 Q100 28.6 96.6 28.9 L94.6 29.4 C97.2 33.5 99.5 40 100 52 L100 74 Q100 78 96 78 L4 78 Q0 78 0 74 L0 52 C0.5 40 2.8 33.5 5.4 29.4 L3.4 28.9 Q0 28.6 0 25.2 L0 23.8 Q0 20.3 3.5 20.3 L11.4 20.3 L18.8 5.8 Q19.8 0.6 26.6 0 Z M28.5 4.8 L71.5 4.8 Q75.3 4.8 76.2 7.6 L82.5 17.8 Q84.6 20.4 81.2 20.4 L18.8 20.4 Q15.4 20.4 17.5 17.8 L23.8 7.6 Q24.7 4.8 28.5 4.8 Z M8.3 46 a8.3 6.9 0 1 0 16.6 0 a8.3 6.9 0 1 0 -16.6 0 Z M75.1 46 a8.3 6.9 0 1 0 16.6 0 a8.3 6.9 0 1 0 -16.6 0 Z M24 67.5 L76 67.5 Q79.6 67.5 80.6 70.6 L84.6 80.5 L15.4 80.5 L19.4 70.6 Q20.4 67.5 24 67.5 Z"/>
     </g>
 </svg>
