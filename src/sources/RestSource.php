@@ -158,7 +158,7 @@ class RestSource extends BaseSource
             CURLOPT_TIMEOUT => $this->timeout,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
-            CURLOPT_USERAGENT => 'Passer/1.0 (+https://craft-passer.com)',
+            CURLOPT_USERAGENT => 'Passer/1.0 (+https://justinholt.com/plugins/craft-passer)',
             CURLOPT_HTTPHEADER => ['Accept: application/json'],
             CURLOPT_SSL_VERIFYPEER => !$this->insecure,
             CURLOPT_SSL_VERIFYHOST => $this->insecure ? 0 : 2,

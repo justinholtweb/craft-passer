@@ -238,7 +238,7 @@ class MediaImporter extends BaseImporter
             CURLOPT_MAXREDIRS => 5,
             CURLOPT_TIMEOUT => max(30, $settings->requestTimeout),
             CURLOPT_CONNECTTIMEOUT => 15,
-            CURLOPT_USERAGENT => 'Passer/1.0 (+https://craft-passer.com)',
+            CURLOPT_USERAGENT => 'Passer/1.0 (+https://justinholt.com/plugins/craft-passer)',
             CURLOPT_FAILONERROR => true,
             // Stop the transfer as soon as it exceeds the cap, rather than downloading a 4GB
             // video and then rejecting it.

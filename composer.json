@@ -27,7 +27,7 @@
         }
     ],
     "support": {
-        "docs": "https://craft-passer.com/docs",
+        "docs": "https://justinholt.com/plugins/craft-passer/docs",
         "source": "https://github.com/justinholtweb/craft-passer",
         "issues": "https://github.com/justinholtweb/craft-passer/issues"
     },
@@ -93,7 +93,7 @@
         "handle": "passer",
         "developer": "Justin Holt",
         "developerUrl": "https://justinholt.com",
-        "documentationUrl": "https://craft-passer.com/docs",
+        "documentationUrl": "https://justinholt.com/plugins/craft-passer/docs",
         "changelogUrl": "https://raw.githubusercontent.com/justinholtweb/craft-passer/main/CHANGELOG.md",
         "class": "justinholtweb\\passer\\Plugin"
     }
